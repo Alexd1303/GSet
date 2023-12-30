@@ -6,12 +6,26 @@
 #include <fstream>
 #include <stdexcept>
 
+/**
+ * @brief Implementazione di un set generico.
+ * 
+ * @tparam T Tipo degli elementi nel set.
+ * @tparam Equal Functore per il confronto di uguaglianza.
+ */
 template<typename T, typename Equal>
 class Set
 {
 public:
+    /**
+     * @brief Costruttore di default.
+     */
     Set() : mData(nullptr), mSize(0), mCapacity(0){}
 
+    /**
+     * @brief Costruttore di copia.
+     *
+     * @param other Altro set da copiare.
+     */
     Set(const Set& other) : mData(nullptr), mEq(other.mEq), mSize(0), mCapacity(0)
     {
         try
@@ -31,6 +45,13 @@ public:
         }
     }
 
+    /**
+     * @brief Costruttore da coppia generica di iteratori.
+     * 
+     * @tparam Iter Tipo dell'iteratore.
+     * @param begin Iteratore di inizio.
+     * @param end Iteratore di fine.
+     */
     template<typename Iter>
     Set(Iter begin, Iter end)
     {
@@ -40,11 +61,20 @@ public:
         }
     }
 
+    /**
+     * @brief Distruttore.
+     */
     ~Set()
     {
         empty();
     }
 
+    /**
+     * @brief Operatore di assegnamento.
+     * 
+     * @param other Altro set da assegnare.
+     * @return Set& Riferimento al set corrente.
+     */
     Set& operator=(const Set& other)
     {
         if(this == &other)
@@ -61,6 +91,13 @@ public:
         return *this;
     }
 
+    /**
+     * @brief Aggiunge un elemento al set.
+     * 
+     * @param value Valore da aggiungere.
+     * @return true Se l'elemento è stato aggiunto con successo.
+     * @return false Se l'elemento è già presente nel set.
+     */
     bool add(const T& value)
     {
 
@@ -93,6 +130,13 @@ public:
         return true;
     }
 
+    /**
+     * @brief Rimuove un elemento dal set.
+     * 
+     * @param value Valore da rimuovere.
+     * @return true Se l'elemento è stato rimosso con successo.
+     * @return false Se l'elemento non è presente nel set.
+     */
     bool remove(const T& value)
     {
         for(int i = 0; i < mSize; i++)
@@ -108,6 +152,13 @@ public:
         return false; //Elemento assente
     }
 
+    /**
+     * @brief Verifica se un elemento è presente nel set.
+     * 
+     * @param value Valore da cercare.
+     * @return true Se l'elemento è presente.
+     * @return false Se l'elemento non è presente.
+     */
     bool contains(const T& value) const
     {
         for(int i = 0; i < mSize; i++)
@@ -119,6 +170,9 @@ public:
         return false;
     }
 
+    /**
+     * @brief Svuota il set.
+     */
     void empty()
     {
         if(mData != nullptr)
@@ -130,7 +184,13 @@ public:
         mSize = 0;
         mCapacity = 0;
     }
-
+    
+    /**
+     * @brief Operatore di accesso agli elementi del set.
+     * 
+     * @param index Indice dell'elemento.
+     * @return T elemento.
+     */
     T operator[](unsigned int index) const
     {
         if(index < 0 || index >= mSize)
@@ -138,6 +198,13 @@ public:
         return mData[index];
     }
 
+    /**
+     * @brief Operatore di confronto di uguaglianza tra set.
+     * 
+     * @param other Altro set da confrontare.
+     * @return true Se i set sono uguali.
+     * @return false Se i set non sono uguali.
+     */
     bool operator==(const Set& other) const
     {
         if(mSize != other.mSize)
@@ -152,6 +219,12 @@ public:
         return true;
     }
 
+    /**
+     * @brief Operatore di unione tra set.
+     * 
+     * @param other Altro set da unire.
+     * @return Set Unione dei due set.
+     */
     Set operator+(const Set& other) const
     {
         Set res(*this);
@@ -163,6 +236,12 @@ public:
         return res;
     }
 
+    /**
+     * @brief Operatore di differenza tra set.
+     * 
+     * @param other Altro set da sottrarre.
+     * @return Set Differenza dei due set.
+     */
     Set operator-(const Set& other) const
     {
         Set res;
@@ -175,6 +254,13 @@ public:
         return res;
     }
 
+    /**
+     * @brief Operatore di stream per la stampa del set.
+     * 
+     * @param out Stream di output.
+     * @param set Set da stampare.
+     * @return std::ostream& Stream di output.
+     */
     friend std::ostream& operator<<(std::ostream& out, const Set& set)
     {
         out << set.mSize;
@@ -197,7 +283,7 @@ public:
 		typedef std::forward_iterator_tag iterator_category;
 		typedef T                         value_type;
 		typedef ptrdiff_t                 difference_type;
-		typedef const T*                  pointer; //LASCIARE TIPO T, NIENTE NODE E SIMILI!!!
+		typedef const T*                  pointer;
 		typedef const T&                  reference;
 
 	
@@ -258,29 +344,42 @@ public:
 
 		// La classe container deve essere messa friend dell'iteratore per poter
 		// usare il costruttore di inizializzazione.
-		friend class Set; // !!! Da cambiare il nome!
+		friend class Set;
 
 		// Costruttore privato di inizializzazione usato dalla classe container
 		// tipicamente nei metodi begin e end
-		const_iterator(const T* nn) : n(nn) { } //PARTE FONDAMENTALE DELL'ITERATORE!!!
+		const_iterator(const T* nn) : n(nn) { }
 		
 		// !!! Eventuali altri metodi privati
 		
 	}; // classe const_iterator
 	
-	// Ritorna l'iteratore all'inizio della sequenza dati
+	/**
+     * @brief Ritorna l'iteratore all'inizio della sequenza dati.
+     * 
+     * @return const_iterator Iteratore all'inizio della sequenza dati.
+     */
 	const_iterator begin() const 
     {
 		return const_iterator(mData);
 	}
 	
-	// Ritorna l'iteratore alla fine della sequenza dati
+	/**
+     * @brief Ritorna l'iteratore alla fine della sequenza dati.
+     * 
+     * @return const_iterator Iteratore alla fine della sequenza dati.
+     */
 	const_iterator end() const
     {
 		return const_iterator(&mData[mSize]);
 	}
 
 private:
+    /**
+     * @brief Ridimensiona la capacità del set.
+     * 
+     * @param newSize Nuova dimensione del set.
+     */
     void resize(unsigned int newSize)
     {
         T* tmp = new T[newSize];
@@ -296,6 +395,11 @@ private:
         mData = tmp;
     }
 
+    /**
+     * @brief Sposta gli elementi a sinistra a partire dall'indice specificato.
+     * 
+     * @param index Indice da cui iniziare lo spostamento.
+     */
     void shiftLeft(int index)
     {
         for(int i = index; i < mSize - 1; i++)
@@ -306,11 +410,22 @@ private:
 
 private:
     T* mData;               //Puntatore ai dati
-    Equal mEq;              //Funtore per confronto elementi
+    Equal mEq;              //Functore per confronto elementi
     unsigned int mSize;     //Numero di elementi presenti
     unsigned int mCapacity; //Numero di elementi inseribili
 };
 
+
+/**
+ * @brief Filtra gli elementi di un set in base a un predicato.
+ * 
+ * @tparam T Tipo degli elementi nel set.
+ * @tparam Equal Functore per il confronto di uguaglianza.
+ * @tparam Pred Predicato per il filtraggio.
+ * @param set Set di input.
+ * @param pred Predicato di filtro.
+ * @return Set<T, Equal> Set filtrato.
+ */
 template<typename T, typename Equal, typename Pred>
 Set<T, Equal> filter_out(const Set<T, Equal>& set, Pred pred)
 {
@@ -324,6 +439,13 @@ Set<T, Equal> filter_out(const Set<T, Equal>& set, Pred pred)
     return res;
 }
 
+/**
+ * @brief Salva un set di stringhe su un file.
+ * 
+ * @tparam Equal Functore per il confronto di uguaglianza.
+ * @param set Set di stringhe di input.
+ * @param path Percorso del file per salvare il set.
+ */
 template<typename Equal>
 void save(const Set<std::string, Equal>& set, const std::string& path)
 {
