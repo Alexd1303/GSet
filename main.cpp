@@ -28,18 +28,29 @@ struct funcDipinto
     }
 };
 
+struct Point
+{
+    int x, y;
+
+    Point() = default;
+    Point(int x, int y) : x(x), y(y) {}
+};
+
+struct funcPoint
+{
+    bool operator()(const Point& a, const Point& b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+};
+
+
 struct predicateInt
 {
     bool operator()(int a) const
     {
         return a > 5;
     }
-};
-
-template<typename T>
-struct Wrapper
-{
-    T* value;
 };
 
 
@@ -171,7 +182,16 @@ int main()
     {
         id->testMethod();
     }
+
+    Set<Point, funcPoint> setPoints;
+    setPoints.add(Point(5, 4));
+    setPoints.add(Point(5, 4));
+    setPoints.add(Point(6, 1));
     
+    for(const auto& p : setPoints)
+    {
+        std::cout << p.x << " " << p.y << std::endl;
+    }
 
     return 0;
 }

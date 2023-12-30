@@ -237,7 +237,7 @@ public:
 		const_iterator& operator++()
         {
 			n++;
-            return n;
+            return *this;
 		}
 
 		// Uguaglianza
