@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <cassert>
 #include <sstream>
 #include "gset.hpp"
@@ -111,7 +112,7 @@ void testMetodiFondamentaliIntSet()
     std::cout << "11:\t" << (intSet.contains(11) ? "true" : "false") << std::endl;
     std::cout << "14:\t" << (intSet.contains(14) ? "true" : "false") << std::endl;
 
-    std::cout << "- Costruzione del set tramite itertori (array contentente {45, 45, 56, 5, 6, 6, 45})" << std::endl;
+    std::cout << "- Costruzione del set tramite iteratori (array contentente {45, 45, 56, 5, 6, 6, 45})" << std::endl;
     int testArray[] = {45, 45, 56, 5, 6, 6, 45};
 
     Set<int, funcInt> iterSet(testArray, testArray + 7); 
@@ -186,7 +187,7 @@ void testMetodiFondamentaliStringSet()
     std::cout << "K:\t" << (stringSet.contains("K") ? "true" : "false") << std::endl;
     std::cout << "N:\t" << (stringSet.contains("N") ? "true" : "false") << std::endl;
 
-    std::cout << "- Costruzione del set tramite itertori (array contentente {a, a, b, c, d, d, a})" << std::endl;
+    std::cout << "- Costruzione del set tramite iteratori (array contentente {a, a, b, c, d, d, a})" << std::endl;
     std::string testArray[] = {"a", "a", "b", "c", "d", "d", "a"};
 
     Set<std::string, funcStr> iterSet(testArray, testArray + 7); 
@@ -194,6 +195,114 @@ void testMetodiFondamentaliStringSet()
     std::cout << iterSet << std::endl;
     ss << iterSet;
     assert(ss.str() == "4 (a) (b) (c) (d)");
+    ss.str("");
+}
+
+class Book
+{
+public:
+    Book() = default;
+    Book(const std::string& ISBN, const std::string& title) : ISBN(ISBN), title(title){}
+    Book(const std::string& ISBN, const std::string& title, const std::vector<std::string>& authors) : ISBN(ISBN), title(title), authors(authors){}
+
+    const std::string& getISBN() const { return ISBN; }
+    const std::string& getTitle() const { return title; }
+    const std::vector<std::string>& getAuthors() const { return authors; }
+
+private:
+    std::string ISBN;
+    std::string title;
+    std::vector<std::string> authors;
+};
+
+std::ostream& operator<<(std::ostream& out, const Book& book)
+{
+    out << book.getISBN() << ": " << book.getTitle();
+    return out;
+}
+
+struct funcBook
+{
+    bool operator()(const Book& a, const Book& b) const
+    {
+        return a.getISBN() == b.getISBN();
+    }
+};
+
+typedef Set<Book, funcBook> BookSet;
+
+void testMetodiFondamentaliBookSet()
+{
+
+    std::stringstream ss;
+
+    std::cout << "******** Test metodi fondamentali del set di libri ********" << std::endl;
+
+    BookSet bookSet;  // ctor default
+
+    std::cout << "- Test add degli elementi: {(9780151660346, 1984), (978349803808, To Kill a Mockingbird), (978349803808, To Kill a Mockingbird), (8869183157, Harry Potter and the Sorcerer's Stone), (9780007203550, The Lord of the Rings), (9780007203550, The Lord of the Rings)}" << std::endl;
+
+    bookSet.add(Book("9780151660346", "1984")); // add 
+    bookSet.add(Book("978349803808", "To Kill a Mockingbird"));
+    assert(bookSet.add(Book("978349803808", "To Kill a Mockingbird")) == false);
+    bookSet.add(Book("8869183157", "Harry Potter and the Sorcerer's Stone"));
+    bookSet.add(Book("9780007203550", "The Lord of the Rings"));
+    assert(bookSet.add(Book("9780007203550", "The Lord of the Rings")) == false);
+
+    std::cout << "Stampa di bookSet dopo inserimenti:" << std::endl;
+    std::cout << bookSet << std::endl;  // operator<<
+    ss << bookSet;
+    assert(bookSet.getSize() == 4);
+    assert(bookSet.getCapacity() == 4);
+    assert(ss.str() == "4 (9780151660346: 1984) (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone) (9780007203550: The Lord of the Rings)");
+    ss.str("");
+
+    BookSet bookSet2(bookSet);  // cctor
+
+    std::cout << "Stampa di bookSet2 dopo copy constructor:" << std::endl;
+    std::cout << bookSet2 << std::endl;  // operator<<
+    ss << bookSet2;
+    assert(bookSet == bookSet2); // operator==
+    assert(ss.str() == "4 (9780151660346: 1984) (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone) (9780007203550: The Lord of the Rings)");
+    ss.str("");
+
+    BookSet bookSet3;
+
+    bookSet3 = bookSet2; // operator=
+
+    std::cout << "Stampa di bookSet3 dopo assegnamento:" << std::endl;
+    std::cout << bookSet3 << std::endl;  // operator<<
+    ss << bookSet3;
+    assert(bookSet == bookSet3); // operator==
+    assert(ss.str() == "4 (9780151660346: 1984) (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone) (9780007203550: The Lord of the Rings)");
+    ss.str("");
+
+    std::cout << "- Test remove degli elementi: {(9780151660346, 1984), (9780007203550, The Lord of the Rings), (1234, AAAA)}" << std::endl;
+
+    bookSet.remove(Book("9780151660346", "1984")); // remove
+    bookSet.remove(Book("9780007203550", "The Lord of the Rings"));
+    assert(bookSet.remove(Book("1234", "AAAA")) == false);
+
+    std::cout << "Stampa di bookSet dopo rimozione:" << std::endl;
+    std::cout << bookSet << std::endl;  // operator<<
+    ss << bookSet;
+    assert(ss.str() == "2 (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone)");
+    ss.str("");
+
+    std::cout << "- Test contains degli elementi: {(9780151660346, 1984), (978349803808, To Kill a Mockingbird), (1234, AAAA), (5678, BBBB)}" << std::endl;
+    std::cout << "(9780151660346, 1984):\t" << (bookSet.contains(Book("9780151660346", "1984")) ? "true" : "false") << std::endl;
+    std::cout << "(978349803808, To Kill a Mockingbird):\t" << (bookSet.contains(Book("978349803808", "To Kill a Mockingbird")) ? "true" : "false") << std::endl;
+    std::cout << "(1234, AAAA):\t" << (bookSet.contains(Book("1234", "AAAA")) ? "true" : "false") << std::endl;
+    std::cout << "(5678, BBBB):\t" << (bookSet.contains(Book("5678", "BBBB")) ? "true" : "false") << std::endl;
+
+    std::cout << "- Costruzione del set tramite iteratori (array contentente {(9780151660346, 1984), (978349803808, To Kill a Mockingbird), (978349803808, To Kill a Mockingbird), (8869183157, Harry Potter and the Sorcerer's Stone), (9780007203550, The Lord of the Rings), (9780007203550, The Lord of the Rings)})" << std::endl;
+    Book testArray[] = {{"9780151660346", "1984"}, {"978349803808", "To Kill a Mockingbird"}, {"978349803808", "To Kill a Mockingbird"}, {"8869183157", "Harry Potter and the Sorcerer's Stone"}, {"9780007203550", "The Lord of the Rings"}, {"9780007203550", "The Lord of the Rings"}};
+
+    Set<Book, funcBook> iterSet(testArray, testArray + 6); 
+    std::cout << "Stampa di iterSet:" << std::endl;
+    std::cout << iterSet << std::endl;
+    ss << iterSet;
+    //assert(ss.str() == "4 (a) (b) (c) (d)");
     ss.str("");
 }
 
@@ -224,6 +333,8 @@ int main()
     std::cout << "\n\n";
     testMetodiFondamentaliStringSet();
     std::cout << "\n\n";
+    testMetodiFondamentaliBookSet();
+    std::cout << "\n\n";
     IntSet intSet;
     intSet.add(5);
     intSet.add(8);
@@ -232,6 +343,15 @@ int main()
     intSet.add(1);
     intSet.add(4);
     testMetodiDiIterazione(intSet);
+    std::cout << "\n\n";
 
+    BookSet bookSet;
+    bookSet.add(Book("9780151660346", "1984"));
+    bookSet.add(Book("978349803808", "To Kill a Mockingbird"));
+    bookSet.add(Book("978349803808", "To Kill a Mockingbird"));
+    bookSet.add(Book("8869183157", "Harry Potter and the Sorcerer's Stone"));
+    bookSet.add(Book("9780007203550", "The Lord of the Rings"));
+    bookSet.add(Book("9780007203550", "The Lord of the Rings"));
+    testMetodiDiIterazione(bookSet);
     return 0;
 }
