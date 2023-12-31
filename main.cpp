@@ -2,7 +2,6 @@
 #include <cassert>
 #include <sstream>
 #include "gset.hpp"
-#include "dipinto.hpp"
 
 struct funcInt
 {
@@ -20,14 +19,6 @@ struct funcStr
     }
 };
 
-struct funcDipinto
-{
-    bool operator()(const Dipinto& a, const Dipinto& b) const
-    {
-        return a == b;
-    }
-};
-
 struct Point
 {
     int x, y;
@@ -38,7 +29,7 @@ struct Point
 
 struct funcPoint
 {
-    bool operator()(const Point& a, const Point& b)
+    bool operator()(const Point& a, const Point& b) const
     {
         return a.x == b.x && a.y == b.y;
     }
@@ -53,145 +44,175 @@ struct predicateInt
     }
 };
 
+typedef Set<int, funcInt> IntSet;
+typedef Set<std::string, funcStr> StringSet;
 
-int main()
+void testMetodiFondamentaliIntSet()
 {
-    //string stream per testare le stampe
+
     std::stringstream ss;
 
-    Set<int, funcInt> set;
-    ss << set;
-    assert(ss.str() == "0");
+    std::cout << "******** Test metodi fondamentali del set di interi ********" << std::endl;
 
-    //test add
-    ss.str(std::string());
-    assert(set.add(5));
-    assert(set.add(4));
-    assert(set.add(4) == false);
-    assert(set.add(6));
-    assert(set.add(7));
-    ss << set;
-    assert(ss.str() == "4 (5) (4) (6) (7)");
+    IntSet intSet;  // ctor default
 
-    //test copy
-    Set<int, funcInt> copy = set;
+    std::cout << "- Test add degli elementi: { 5, 8, 8, 8, 1, 4 }" << std::endl;
 
-    assert(set.getSize() == copy.getSize());
-    assert(set.getCapacity() == copy.getCapacity());
-    assert(set == copy);
+    intSet.add(5); // add 
+    intSet.add(8);
+    intSet.add(8);
+    intSet.add(8);
+    intSet.add(1);
+    intSet.add(4);
 
-    //test assegnamento
-    Set<int, funcInt> empty;
-    empty = set;
-    assert(empty == set);
+    std::cout << "Stampa di intSet dopo inserimenti:" << std::endl;
+    std::cout << intSet << std::endl;  // operator<<
+    ss << intSet;
+    assert(intSet.getSize() == 4);
+    assert(intSet.getCapacity() == 4);
+    assert(ss.str() == "4 (5) (8) (1) (4)");
+    ss.str("");
 
-    //test creazione da iteratore
-    ss.str(std::string());
-    std::vector<int> testVec = { 1,2,3,3,3,5,6,6,7,7 };
-    Set<int, funcInt> fromIterSet(testVec.begin(), testVec.end());
-    ss << fromIterSet;
-    assert(ss.str() == "6 (1) (2) (3) (5) (6) (7)");
+    IntSet intSet2(intSet);  // cctor
 
-    //test remove
-    ss.str(std::string());
-    assert(set.remove(5));
-    assert(set.remove(10) == false);
-    assert(set.remove(7));
-    ss << set;
-    assert(ss.str() == "2 (4) (6)");
+    std::cout << "Stampa di intSet2 dopo copy constructor:" << std::endl;
+    std::cout << intSet2 << std::endl;  // operator<<
+    ss << intSet2;
+    assert(intSet == intSet2); // operator==
+    assert(ss.str() == "4 (5) (8) (1) (4)");
+    ss.str("");
 
-    //test contains
-    assert(set.contains(4));
-    assert(set.contains(15) == false);
+    IntSet intSet3;
 
-    //test []
-    for(int i = 0; i < copy.getSize(); i++)
+    intSet3 = intSet; // operator=
+
+    std::cout << "Stampa di intSet3 dopo assegnamento:" << std::endl;
+    std::cout << intSet3 << std::endl;  // operator<<
+    ss << intSet3;
+    assert(intSet == intSet3); // operator==
+    assert(ss.str() == "4 (5) (8) (1) (4)");
+    ss.str("");
+
+    std::cout << "- Test remove degli elementi: {8, 1, 10}" << std::endl;
+
+    intSet.remove(8); // remove
+    intSet.remove(1);
+    assert(intSet.remove(10) == false);
+
+    std::cout << "Stampa di intSet dopo rimozione:" << std::endl;
+    std::cout << intSet << std::endl;  // operator<<
+    ss << intSet;
+    assert(ss.str() == "2 (5) (4)");
+    ss.str("");
+
+    std::cout << "- Test contains degli elementi: {5, 4, 11, 14}" << std::endl;
+    std::cout << "5:\t" << (intSet.contains(5) ? "true" : "false") << std::endl;
+    std::cout << "4:\t" << (intSet.contains(4) ? "true" : "false") << std::endl;
+    std::cout << "11:\t" << (intSet.contains(11) ? "true" : "false") << std::endl;
+    std::cout << "14:\t" << (intSet.contains(14) ? "true" : "false") << std::endl;
+}
+
+void testMetodiFondamentaliStringSet()
+{
+
+    std::stringstream ss;
+
+    std::cout << "******** Test metodi fondamentali del set di stringhe ********" << std::endl;
+
+    StringSet stringSet;  // ctor default
+
+    std::cout << "- Test add degli elementi: {E, H, H, H, A, D}" << std::endl;
+
+    stringSet.add("E"); // add 
+    stringSet.add("H");
+    stringSet.add("H");
+    stringSet.add("H");
+    stringSet.add("A");
+    stringSet.add("D");
+
+    std::cout << "Stampa di stringSet dopo inserimenti:" << std::endl;
+    std::cout << stringSet << std::endl;  // operator<<
+    ss << stringSet;
+    assert(stringSet.getSize() == 4);
+    assert(stringSet.getCapacity() == 4);
+    assert(ss.str() == "4 (E) (H) (A) (D)");
+    ss.str("");
+
+    StringSet stringSet2(stringSet);  // cctor
+
+    std::cout << "Stampa di intSet2 dopo copy constructor:" << std::endl;
+    std::cout << stringSet2 << std::endl;  // operator<<
+    ss << stringSet2;
+    assert(stringSet == stringSet2); // operator==
+    assert(ss.str() == "4 (E) (H) (A) (D)");
+    ss.str("");
+
+    StringSet stringSet3;
+
+    stringSet3 = stringSet2; // operator=
+
+    std::cout << "Stampa di intSet3 dopo assegnamento:" << std::endl;
+    std::cout << stringSet3 << std::endl;  // operator<<
+    ss << stringSet3;
+    assert(stringSet == stringSet3); // operator==
+    assert(ss.str() == "4 (E) (H) (A) (D)");
+    ss.str("");
+
+    std::cout << "- Test remove degli elementi: {H, A, J}" << std::endl;
+
+    stringSet.remove("H"); // remove
+    stringSet.remove("A");
+    assert(stringSet.remove("J") == false);
+
+    std::cout << "Stampa di stringSet dopo rimozione:" << std::endl;
+    std::cout << stringSet << std::endl;  // operator<<
+    ss << stringSet;
+    assert(ss.str() == "2 (E) (D)");
+    ss.str("");
+
+    std::cout << "- Test contains degli elementi: {E, D, K, N}" << std::endl;
+    std::cout << "E:\t" << (stringSet.contains("E") ? "true" : "false") << std::endl;
+    std::cout << "D:\t" << (stringSet.contains("D") ? "true" : "false") << std::endl;
+    std::cout << "K:\t" << (stringSet.contains("K") ? "true" : "false") << std::endl;
+    std::cout << "N:\t" << (stringSet.contains("N") ? "true" : "false") << std::endl;
+
+}
+
+template<typename T, typename Equal>
+void testMetodiDiIterazione(const Set<T, Equal>& testSet)
+{
+    std::cout << "******** Test metodi di iterazione del set generico ********" << std::endl;
+
+    std::cout << "- Operator[]" << std::endl;
+    for(int i = 0; i < testSet.getSize(); i++)
     {
-        std::cout << copy[i] << std::endl;
+        std::cout << i << ": " << testSet[i] << std::endl;
     }
-    std::cout << std::endl;
 
-    try
-    {
-        copy[copy.getSize()];
-        assert(false);
-    }
-    catch(...)
-    {
-        assert(true);
-    }
-    
-
-    //test +
-    ss.str(std::string());
-    Set<int, funcInt> tmp;
-    tmp.add(9),
-    tmp.add(4);
-    tmp.add(15);
-
-    auto setUnion = set + tmp;
-    ss << setUnion;
-    assert(ss.str() == "4 (4) (6) (9) (15)");
-
-    //test -
-    ss.str(std::string());
-
-    auto setIntersection = set - tmp;
-    ss << setIntersection;
-    assert(ss.str() == "1 (4)");
-
-    //test filter_out
-    ss.str(std::string());
-    predicateInt pred;
-    auto res = filter_out(setUnion, pred);
-    ss << res;
-    assert(ss.str() == "3 (6) (9) (15)");
-
-    //test save
-    Set<std::string, funcStr> stringSet;
-
-    stringSet.add("ciao");
-    stringSet.add("mondo");
-    stringSet.add("ciao");
-    stringSet.add("1");
-    stringSet.add("2");
-    stringSet.add("3");
-    stringSet.add("4");
-
-    save(stringSet, "testSet.txt");
-
-    //iteratori
-    auto i = setUnion.begin();
-    auto ie = setUnion.end();
-
-    for(; i != ie; i++)
+    std::cout << "- Const Iterator" << std::endl;
+    auto i = testSet.begin();
+    auto ie = testSet.end();
+    for(; i != ie; ++i)
     {
         std::cout << *i << std::endl;
     }
+}
 
-    //custom set
-    Set<Dipinto, funcDipinto> setDipinti;
-    setDipinti.add(Dipinto("a", "b", "c", "d", "e"));
-    setDipinti.add(Dipinto("a", "b", "c", "d", "e"));
-    setDipinti.add(Dipinto("f", "g", "h", "i", "j"));
 
-    auto id = setDipinti.begin();
-    auto ied = setDipinti.end();
-
-    for(; id != ied; id++)
-    {
-        id->testMethod();
-    }
-
-    Set<Point, funcPoint> setPoints;
-    setPoints.add(Point(5, 4));
-    setPoints.add(Point(5, 4));
-    setPoints.add(Point(6, 1));
-    
-    for(const auto& p : setPoints)
-    {
-        std::cout << p.x << " " << p.y << std::endl;
-    }
+int main()
+{
+    testMetodiFondamentaliIntSet();
+    std::cout << "\n\n";
+    testMetodiFondamentaliStringSet();
+    std::cout << "\n\n";
+    IntSet intSet;
+    intSet.add(5);
+    intSet.add(8);
+    intSet.add(8);
+    intSet.add(8);
+    intSet.add(1);
+    intSet.add(4);
+    testMetodiDiIterazione(intSet);
 
     return 0;
 }

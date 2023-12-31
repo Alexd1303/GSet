@@ -10,7 +10,7 @@
  * @brief Implementazione di un set generico.
  * 
  * @tparam T Tipo degli elementi nel set.
- * @tparam Equal Functore per il confronto di uguaglianza.
+ * @tparam Equal Funtore per il confronto di uguaglianza.
  */
 template<typename T, typename Equal>
 class Set
@@ -101,11 +101,8 @@ public:
     bool add(const T& value)
     {
 
-        for(int i = 0; i < mSize; i++)
-        {
-            if(mEq(mData[i], value))
-                return false; //Elemento già presente
-        }
+        if(contains(value))
+            return false; //Elemento già presente
 
         try
         {
@@ -184,7 +181,7 @@ public:
         mSize = 0;
         mCapacity = 0;
     }
-    
+
     /**
      * @brief Operatore di accesso agli elementi del set.
      * 
@@ -194,7 +191,7 @@ public:
     T operator[](unsigned int index) const
     {
         if(index < 0 || index >= mSize)
-            throw std::logic_error("index out of bounds"); //index out of bounds
+            throw std::out_of_range("index out of bounds"); //index out of bounds
         return mData[index];
     }
 
@@ -217,41 +214,6 @@ public:
         }
 
         return true;
-    }
-
-    /**
-     * @brief Operatore di unione tra set.
-     * 
-     * @param other Altro set da unire.
-     * @return Set Unione dei due set.
-     */
-    Set operator+(const Set& other) const
-    {
-        Set res(*this);
-        for(int i = 0; i < other.mSize; i++)
-        {
-            res.add(other[i]);
-        }
-
-        return res;
-    }
-
-    /**
-     * @brief Operatore di differenza tra set.
-     * 
-     * @param other Altro set da sottrarre.
-     * @return Set Differenza dei due set.
-     */
-    Set operator-(const Set& other) const
-    {
-        Set res;
-        for(int i = 0; i < other.mSize; i++)
-        {
-            if(contains(other[i]))
-                res.add(other[i]);
-        }
-
-        return res;
     }
 
     /**
@@ -410,7 +372,7 @@ private:
 
 private:
     T* mData;               //Puntatore ai dati
-    Equal mEq;              //Functore per confronto elementi
+    Equal mEq;              //Funtore per confronto elementi
     unsigned int mSize;     //Numero di elementi presenti
     unsigned int mCapacity; //Numero di elementi inseribili
 };
@@ -420,7 +382,7 @@ private:
  * @brief Filtra gli elementi di un set in base a un predicato.
  * 
  * @tparam T Tipo degli elementi nel set.
- * @tparam Equal Functore per il confronto di uguaglianza.
+ * @tparam Equal Funtore per il confronto di uguaglianza.
  * @tparam Pred Predicato per il filtraggio.
  * @param set Set di input.
  * @param pred Predicato di filtro.
@@ -440,9 +402,48 @@ Set<T, Equal> filter_out(const Set<T, Equal>& set, Pred pred)
 }
 
 /**
+ * @brief Operatore di unione tra set.
+ * 
+ * @param set1 Primo set da unire.
+ * @param set2 Altro set da unire.
+ * @return Set Unione dei due set.
+ */
+template<typename T, typename Equal>
+Set<T, Equal> operator+(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
+{
+    Set<T, Equal> res(set1);
+    for(int i = 0; i < set2.getSize(); i++)
+    {
+        res.add(set2[i]);
+    }
+
+    return res;
+}
+
+/**
+ * @brief Operatore di intersezione tra set.
+ * 
+ * @param set1 Primo set da intersecare.
+ * @param set2 Altro set da intersecare.
+ * @return Set Differenza dei due set.
+ */
+template<typename T, typename Equal>
+Set<T, Equal> operator-(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
+{
+    Set<T, Equal> res;
+    for(int i = 0; i < set2.getSize(); i++)
+    {
+        if(set1.contains(set2[i]))
+            res.add(set2[i]);
+    }
+
+    return res;
+}
+
+/**
  * @brief Salva un set di stringhe su un file.
  * 
- * @tparam Equal Functore per il confronto di uguaglianza.
+ * @tparam Equal Funtore per il confronto di uguaglianza.
  * @param set Set di stringhe di input.
  * @param path Percorso del file per salvare il set.
  */
