@@ -1,3 +1,11 @@
+/**
+ * @file gset.hpp
+ * 
+ * @brief file header della classe templata Set.
+ * 
+ * Definizione e implementazione di un set generico.
+ */
+
 #ifndef GSET_HPP
 #define GSET_HPP
 
@@ -7,7 +15,12 @@
 #include <stdexcept>
 
 /**
- * @brief Implementazione di un set generico.
+ * @brief Classe Set generica.
+ * 
+ * La classe implementa un generico set di oggetti T, 
+ * in cui ogni oggetto può comparire al massimo una volta.
+ * La valutazione se due dati di tipo T sono uguali è realizzata
+ * tramite un secondo funtore Equal.
  * 
  * @tparam T Tipo degli elementi nel set.
  * @tparam Equal Funtore per il confronto di uguaglianza.
@@ -18,6 +31,8 @@ class Set
 public:
     /**
      * @brief Costruttore di default.
+     * 
+     * @post mData = nullptr, mSize = 0, mCapacity = 0.
      */
     Set() : mData(nullptr), mSize(0), mCapacity(0){}
 
@@ -25,6 +40,8 @@ public:
      * @brief Costruttore di copia.
      *
      * @param other Altro set da copiare.
+     * 
+     * @throw eccezione di allocazione
      */
     Set(const Set& other) : mData(nullptr), mEq(other.mEq), mSize(0), mCapacity(0)
     {
@@ -51,13 +68,24 @@ public:
      * @tparam Iter Tipo dell'iteratore.
      * @param begin Iteratore di inizio.
      * @param end Iteratore di fine.
+     * 
+     * @throw errore di allocazione
      */
-    template<typename Iter>
+    template <typename Iter>
     Set(Iter begin, Iter end) : mData(nullptr), mSize(0), mCapacity(0)
     {
-        for(; begin != end; begin++)
+        Iter curr = begin;
+        try 
         {
-            add(static_cast<T>(*begin));
+            for(; curr!=end; ++curr)
+            {
+                add(static_cast<T>(*curr));
+            }
+        }
+        catch(...)
+        {
+            empty();
+            throw;
         }
     }
 
@@ -74,18 +102,28 @@ public:
      * 
      * @param other Altro set da assegnare.
      * @return Set& Riferimento al set corrente.
+     * 
+     * @throw eccezione di allocazione
      */
     Set& operator=(const Set& other)
     {
         if(this == &other)
             return *this;
 
-        resize(other.mCapacity);
-        mSize = other.mSize;
-
-        for(int i = 0; i < mSize; i++)
+        try
         {
-            mData[i] = other[i];
+            resize(other.mCapacity);
+            mSize = other.mSize;
+
+            for(int i = 0; i < mSize; i++)
+            {
+                mData[i] = other[i];
+            }
+        }
+        catch(...)
+        {
+            empty();
+            throw;
         }
 
         return *this;
@@ -93,6 +131,12 @@ public:
 
     /**
      * @brief Aggiunge un elemento al set.
+     * 
+     * Aggiunge un elemento al set, verificando 
+     * prima che questo non sia già presente.
+     * Nel caso in cui la memoria preallocata non sia sufficiente
+     * per ospitare il nuovo elemento viene incrementata la
+     * dimensione della struttura sottostante.
      * 
      * @param value Valore da aggiungere.
      * @return true Se l'elemento è stato aggiunto con successo.
@@ -152,9 +196,12 @@ public:
     /**
      * @brief Verifica se un elemento è presente nel set.
      * 
+     * Verifica se un elemento è presente nel set.
+     * Utilizza in funtore di uguaglianza Equal
+     * 
      * @param value Valore da cercare.
-     * @return true Se l'elemento è presente.
-     * @return false Se l'elemento non è presente.
+     * @return true se l'elemento è presente.
+     * @return false se l'elemento non è presente.
      */
     bool contains(const T& value) const
     {
@@ -169,6 +216,8 @@ public:
 
     /**
      * @brief Svuota il set.
+     * 
+     * @post mData = nullptr, mSize = 0, mCapacity = 0
      */
     void empty()
     {
@@ -187,6 +236,8 @@ public:
      * 
      * @param index Indice dell'elemento.
      * @return T elemento.
+     * 
+     * @throw std::out_of_range se l'indice è fuori dai limit.
      */
     T operator[](unsigned int index) const
     {
@@ -309,10 +360,7 @@ public:
 		friend class Set;
 
 		// Costruttore privato di inizializzazione usato dalla classe container
-		// tipicamente nei metodi begin e end
 		const_iterator(const T* nn) : n(nn) { }
-		
-		// !!! Eventuali altri metodi privati
 		
 	}; // classe const_iterator
 	
@@ -381,6 +429,9 @@ private:
 /**
  * @brief Filtra gli elementi di un set in base a un predicato.
  * 
+ * Funzione GLOBALE che ritorna un set contente 
+ * gli elementi di set che soddisfano il predicato pred.
+ * 
  * @tparam T Tipo degli elementi nel set.
  * @tparam Equal Funtore per il confronto di uguaglianza.
  * @tparam Pred Predicato per il filtraggio.
@@ -404,6 +455,9 @@ Set<T, Equal> filter_out(const Set<T, Equal>& set, Pred pred)
 /**
  * @brief Operatore di unione tra set.
  * 
+ * Funzione GLOBALE che ritorna un set i cui elementi 
+ * sono il risultato dell'unione dei due set passati come argomento.
+ * 
  * @param set1 Primo set da unire.
  * @param set2 Altro set da unire.
  * @return Set Unione dei due set.
@@ -423,9 +477,12 @@ Set<T, Equal> operator+(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
 /**
  * @brief Operatore di intersezione tra set.
  * 
+ * Funzione GLOBALE che ritorna un set i cui elementi 
+ * sono il risultato dell'intersezione dei due set passati come argomento.
+ * 
  * @param set1 Primo set da intersecare.
  * @param set2 Altro set da intersecare.
- * @return Set Differenza dei due set.
+ * @return Set Intersezione dei due set.
  */
 template<typename T, typename Equal>
 Set<T, Equal> operator-(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
@@ -450,10 +507,17 @@ Set<T, Equal> operator-(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
 template<typename Equal>
 void save(const Set<std::string, Equal>& set, const std::string& path)
 {
-    std::ofstream file(path);
-    for(unsigned int i = 0; i < set.getSize(); i++)
+    try
     {
-        file << set[i] << '\n';
+        std::ofstream file(path);
+        for(unsigned int i = 0; i < set.getSize(); i++)
+        {
+            file << set[i] << '\n';
+        }
+    }
+    catch(...)
+    {
+        throw std::runtime_error("Impossibile aprire il file per la scrittura");
     }
 }
 
