@@ -53,7 +53,7 @@ public:
      * @param end Iteratore di fine.
      */
     template<typename Iter>
-    Set(Iter begin, Iter end)
+    Set(Iter begin, Iter end) : mData(nullptr), mSize(0), mCapacity(0)
     {
         for(; begin != end; begin++)
         {

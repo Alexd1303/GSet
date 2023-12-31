@@ -110,6 +110,16 @@ void testMetodiFondamentaliIntSet()
     std::cout << "4:\t" << (intSet.contains(4) ? "true" : "false") << std::endl;
     std::cout << "11:\t" << (intSet.contains(11) ? "true" : "false") << std::endl;
     std::cout << "14:\t" << (intSet.contains(14) ? "true" : "false") << std::endl;
+
+    std::cout << "- Costruzione del set tramite itertori (array contentente {45, 45, 56, 5, 6, 6, 45})" << std::endl;
+    int testArray[] = {45, 45, 56, 5, 6, 6, 45};
+
+    Set<int, funcInt> iterSet(testArray, testArray + 7); 
+    std::cout << "Stampa di iterSet:" << std::endl;
+    std::cout << iterSet << std::endl;
+    ss << iterSet;
+    assert(ss.str() == "4 (45) (56) (5) (6)");
+    ss.str("");
 }
 
 void testMetodiFondamentaliStringSet()
@@ -176,6 +186,15 @@ void testMetodiFondamentaliStringSet()
     std::cout << "K:\t" << (stringSet.contains("K") ? "true" : "false") << std::endl;
     std::cout << "N:\t" << (stringSet.contains("N") ? "true" : "false") << std::endl;
 
+    std::cout << "- Costruzione del set tramite itertori (array contentente {a, a, b, c, d, d, a})" << std::endl;
+    std::string testArray[] = {"a", "a", "b", "c", "d", "d", "a"};
+
+    Set<std::string, funcStr> iterSet(testArray, testArray + 7); 
+    std::cout << "Stampa di iterSet:" << std::endl;
+    std::cout << iterSet << std::endl;
+    ss << iterSet;
+    assert(ss.str() == "4 (a) (b) (c) (d)");
+    ss.str("");
 }
 
 template<typename T, typename Equal>
