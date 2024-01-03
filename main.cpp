@@ -404,7 +404,7 @@ void testMetodiGlobali()
     assert(ss.str() == "9 (5) (8) (1) (4) (7) (765) (56) (65) (33)");
     ss.str("");
 
-    std::cout << "- Test itersezione tra set" << std::endl;
+    std::cout << "- Test intersezione tra set" << std::endl;
     auto setIntersection = intA - intB;
     std::cout << setIntersection << std::endl;
     ss << setIntersection;
@@ -447,7 +447,7 @@ void testMetodiGlobali()
     assert(ss.str() == "6 (9780151660346: 1984) (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone) (9780007203550: The Lord of the Rings) (1234: AAAA) (5678: BBBB)");
     ss.str("");
 
-    std::cout << "- Test itersezione tra set" << std::endl;
+    std::cout << "- Test intersezione tra set" << std::endl;
     auto setIntersectionB = bookA - bookB;
     std::cout << setIntersectionB << std::endl;
     ss << setIntersectionB;

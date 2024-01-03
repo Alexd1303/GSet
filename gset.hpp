@@ -220,7 +220,7 @@ public:
      * 
      * @post mData = nullptr, mSize = 0, mCapacity = 0
      */
-    void empty()///////////////
+    void empty()
     {
         if(mData != nullptr)
         {
