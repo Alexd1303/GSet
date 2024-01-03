@@ -52,7 +52,7 @@ public:
 
             for(int i = 0; i < mSize; i++)
             {
-                mData[i] = other[i];
+                mData[i] = new T(other[i]);
             }
         }
         catch(...)
@@ -117,7 +117,7 @@ public:
 
             for(int i = 0; i < mSize; i++)
             {
-                mData[i] = other[i];
+                mData[i] = new T(other[i]);
             }
         }
         catch(...)
@@ -159,7 +159,7 @@ public:
                 resize(mCapacity + mCapacity / 2);
             }
         
-            mData[mSize] = value;
+            mData[mSize] = new T(value);
             mSize++;
         }
         catch(...)
@@ -182,8 +182,9 @@ public:
     {
         for(int i = 0; i < mSize; i++)
         {
-            if(mEq(mData[i], value))
+            if(mEq(*mData[i], value))
             {
+                delete mData[i];
                 shiftLeft(i);
                 mSize--;
                 return true;
@@ -207,7 +208,7 @@ public:
     {
         for(int i = 0; i < mSize; i++)
         {
-            if(mEq(mData[i], value))
+            if(mEq(*mData[i], value))
                 return true;
         }
 
@@ -219,10 +220,14 @@ public:
      * 
      * @post mData = nullptr, mSize = 0, mCapacity = 0
      */
-    void empty()
+    void empty()///////////////
     {
         if(mData != nullptr)
         {
+            for(unsigned int i = 0; i < mSize; i++)
+            {
+                delete mData[i];
+            }
             delete[] mData;
             mData = nullptr;
         }
@@ -243,7 +248,7 @@ public:
     {
         if(index < 0 || index >= mSize)
             throw std::out_of_range("index out of bounds"); //index out of bounds
-        return mData[index];
+        return *mData[index];
     }
 
     /**
@@ -315,13 +320,13 @@ public:
 		// Ritorna il dato riferito dall'iteratore (dereferenziamento)
 		reference operator*() const 
         {
-            return *n;
+            return **n;
         }
 
 		// Ritorna il puntatore al dato riferito dall'iteratore
 		pointer operator->() const 
         {
-			return n;
+			return *n;
 		}
 		
 		// Operatore di iterazione post-incremento
@@ -353,14 +358,14 @@ public:
 
 	private:
 		//Dati membro
-        const T* n;
+        const T* const* n;
 
 		// La classe container deve essere messa friend dell'iteratore per poter
 		// usare il costruttore di inizializzazione.
 		friend class Set;
 
 		// Costruttore privato di inizializzazione usato dalla classe container
-		const_iterator(const T* nn) : n(nn) { }
+		const_iterator(const T* const* nn) : n(nn) { }
 		
 	}; // classe const_iterator
 	
@@ -392,7 +397,7 @@ private:
      */
     void resize(unsigned int newSize)
     {
-        T* tmp = new T[newSize];
+        T** tmp = new T*[newSize];
         
         for(int i = 0; i < mSize; i++)
         {
@@ -419,7 +424,7 @@ private:
     }
 
 private:
-    T* mData;               //Puntatore ai dati
+    T** mData;               //Puntatore ai dati
     Equal mEq;              //Funtore per confronto elementi
     unsigned int mSize;     //Numero di elementi presenti
     unsigned int mCapacity; //Numero di elementi inseribili
