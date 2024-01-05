@@ -20,7 +20,7 @@
  * La classe implementa un generico set di oggetti T, 
  * in cui ogni oggetto può comparire al massimo una volta.
  * La valutazione se due dati di tipo T sono uguali è realizzata
- * tramite un secondo funtore Equal.
+ * tramite un funtore Equal.
  * 
  * @tparam T Tipo degli elementi nel set.
  * @tparam Equal Funtore per il confronto di uguaglianza.
