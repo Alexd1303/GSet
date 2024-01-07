@@ -29,6 +29,8 @@ template<typename T, typename Equal>
 class Set
 {
 public:
+    typedef unsigned int size_type;
+
     /**
      * @brief Costruttore di default.
      * 
@@ -41,7 +43,7 @@ public:
      *
      * @param other Altro set da copiare.
      * 
-     * @throw eccezione di allocazione
+     * @throw Eccezione di allocazione
      */
     Set(const Set& other) : mData(nullptr), mEq(other.mEq), mSize(0), mCapacity(0)
     {
@@ -50,7 +52,7 @@ public:
             resize(other.mCapacity);
             mSize = other.mSize;
 
-            for(int i = 0; i < mSize; i++)
+            for(size_type i = 0; i < mSize; i++)
             {
                 mData[i] = other[i];
             }
@@ -69,7 +71,7 @@ public:
      * @param begin Iteratore di inizio.
      * @param end Iteratore di fine.
      * 
-     * @throw errore di allocazione
+     * @throw Errore di allocazione
      */
     template <typename Iter>
     Set(Iter begin, Iter end) : mData(nullptr), mSize(0), mCapacity(0)
@@ -103,7 +105,7 @@ public:
      * @param other Altro set da assegnare.
      * @return Set& Riferimento al set corrente.
      * 
-     * @throw eccezione di allocazione
+     * @throw Eccezione di allocazione
      */
     Set& operator=(const Set& other)
     {
@@ -180,7 +182,7 @@ public:
      */
     bool remove(const T& value)
     {
-        for(int i = 0; i < mSize; i++)
+        for(size_type i = 0; i < mSize; i++)
         {
             if(mEq(mData[i], value))
             {
@@ -205,7 +207,7 @@ public:
      */
     bool contains(const T& value) const
     {
-        for(int i = 0; i < mSize; i++)
+        for(size_type i = 0; i < mSize; i++)
         {
             if(mEq(mData[i], value))
                 return true;
@@ -239,7 +241,7 @@ public:
      * 
      * @throw std::out_of_range se l'indice è fuori dai limit.
      */
-    T operator[](unsigned int index) const
+    T operator[](size_type index) const
     {
         if(index < 0 || index >= mSize)
             throw std::out_of_range("index out of bounds"); //index out of bounds
@@ -248,6 +250,8 @@ public:
 
     /**
      * @brief Operatore di confronto di uguaglianza tra set.
+     * 
+     * Verifica se due Set contentogono gli stessi dati
      * 
      * @param other Altro set da confrontare.
      * @return true Se i set sono uguali.
@@ -258,7 +262,7 @@ public:
         if(mSize != other.mSize)
             return false;
 
-        for(int i = 0; i < mSize; i++)
+        for(size_type i = 0; i < mSize; i++)
         {
             if(!contains(other[i]))
                 return false;
@@ -277,7 +281,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Set& set)
     {
         out << set.mSize;
-        for(int i = 0; i < set.mSize; i++)
+        for(typename Set::size_type i = 0; i < set.mSize; i++)
         {
             out << " (" << set[i] << ")";
         }
@@ -285,8 +289,8 @@ public:
         return out;
     }
 
-    unsigned int getSize() const { return mSize; }
-    unsigned int getCapacity() const { return mCapacity; }
+    size_type getSize() const { return mSize; }
+    size_type getCapacity() const { return mCapacity; }
 
     ///CONST ITERATOR
 
@@ -390,11 +394,11 @@ private:
      * 
      * @param newSize Nuova dimensione del set.
      */
-    void resize(unsigned int newSize)
+    void resize(size_type newSize)
     {
         T* tmp = new T[newSize];
         
-        for(int i = 0; i < mSize; i++)
+        for(size_type i = 0; i < mSize; i++)
         {
             tmp[i] = mData[i];
         }
@@ -410,9 +414,9 @@ private:
      * 
      * @param index Indice da cui iniziare lo spostamento.
      */
-    void shiftLeft(int index)
+    void shiftLeft(size_type index)
     {
-        for(int i = index; i < mSize - 1; i++)
+        for(size_type i = index; i < mSize - 1; i++)
         {
             mData[i] = mData[i + 1];
         }
@@ -421,8 +425,8 @@ private:
 private:
     T* mData;               //Puntatore ai dati
     Equal mEq;              //Funtore per confronto elementi
-    unsigned int mSize;     //Numero di elementi presenti
-    unsigned int mCapacity; //Numero di elementi inseribili
+    size_type mSize;        //Numero di elementi presenti
+    size_type mCapacity;    //Numero di elementi inseribili
 };
 
 
@@ -443,7 +447,7 @@ template<typename T, typename Equal, typename Pred>
 Set<T, Equal> filter_out(const Set<T, Equal>& set, Pred pred)
 {
     Set<T, Equal> res;
-    for(int i = 0; i < set.getSize(); i++)
+    for(typename Set<T, Equal>::size_type i = 0; i < set.getSize(); i++)
     {
         if(pred(set[i]))
             res.add(set[i]);
@@ -466,7 +470,7 @@ template<typename T, typename Equal>
 Set<T, Equal> operator+(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
 {
     Set<T, Equal> res(set1);
-    for(int i = 0; i < set2.getSize(); i++)
+    for(typename Set<T, Equal>::size_type i = 0; i < set2.getSize(); i++)
     {
         res.add(set2[i]);
     }
@@ -488,7 +492,7 @@ template<typename T, typename Equal>
 Set<T, Equal> operator-(const Set<T, Equal>& set1, const Set<T, Equal>& set2)
 {
     Set<T, Equal> res;
-    for(int i = 0; i < set2.getSize(); i++)
+    for(typename Set<T, Equal>::size_type i = 0; i < set2.getSize(); i++)
     {
         if(set1.contains(set2[i]))
             res.add(set2[i]);
@@ -510,7 +514,7 @@ void save(const Set<std::string, Equal>& set, const std::string& path)
     try
     {
         std::ofstream file(path);
-        for(unsigned int i = 0; i < set.getSize(); i++)
+        for(typename Set<std::string, Equal>::size_type i = 0; i < set.getSize(); i++)
         {
             file << set[i] << '\n';
         }
