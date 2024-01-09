@@ -341,7 +341,7 @@ void testMetodiDiIterazione(const Set<T, Equal>& testSet)
     std::cout << "******** Test metodi di iterazione del set generico ********" << std::endl;
 
     std::cout << "- Test Operator[]" << std::endl;
-    for(int i = 0; i < testSet.getSize(); i++)
+    for(unsigned int i = 0; i < testSet.getSize(); i++)
     {
         std::cout << i << ": " << testSet[i] << std::endl;
     }

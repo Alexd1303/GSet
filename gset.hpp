@@ -385,7 +385,7 @@ public:
      */
 	const_iterator end() const
     {
-		return const_iterator(&mData[mSize]);
+		return const_iterator(mData + mSize);
 	}
 
 private:
