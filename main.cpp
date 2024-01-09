@@ -491,7 +491,7 @@ void testSave()
         std::cout << ss.str() << std::endl;
         assert(ss.str() == "E\nH\nA\nD\n");
     }
-    catch(const std::exception& e)
+    catch(...)
     {
         throw std::runtime_error("Impossibile aprire il file");
     }
