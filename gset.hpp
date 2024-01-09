@@ -117,7 +117,7 @@ public:
             resize(other.mCapacity);
             mSize = other.mSize;
 
-            for(int i = 0; i < mSize; i++)
+            for(size_type i = 0; i < mSize; i++)
             {
                 mData[i] = other[i];
             }
