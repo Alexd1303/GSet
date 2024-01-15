@@ -210,7 +210,7 @@ void testMetodiStringSet()
 class Book
 {
 public:
-    Book() = default;
+    //Book() = default;
     Book(const std::string& ISBN, const std::string& title) : ISBN(ISBN), title(title){}
     Book(const std::string& ISBN, const std::string& title, const std::vector<std::string>& authors) : ISBN(ISBN), title(title), authors(authors){}
 

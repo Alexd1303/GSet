@@ -13,6 +13,7 @@
 #include <ostream>
 #include <fstream>
 #include <stdexcept>
+#include <memory>
 
 /**
  * @brief Classe Set generica.
@@ -55,7 +56,7 @@ public:
 
             for(size_type i = 0; i < mSize; i++)
             {
-                mData[i] = other[i];
+                mAllocator.construct(&mData[i], other[i]);
             }
         }
         catch(...)
@@ -120,7 +121,7 @@ public:
 
             for(size_type i = 0; i < mSize; i++)
             {
-                mData[i] = other[i];
+                mAllocator.construct(&mData[i], other[i]);
             }
         }
         catch(...)
@@ -162,7 +163,7 @@ public:
                 resize(mCapacity + mCapacity / 2);
             }
         
-            mData[mSize] = value;
+            mAllocator.construct(&mData[mSize], value);
             mSize++;
         }
         catch(...)
@@ -226,7 +227,7 @@ public:
     {
         if(mData != nullptr)
         {
-            delete[] mData;
+            mAllocator.deallocate(mData, mCapacity);
             mData = nullptr;
         }
         
@@ -397,15 +398,15 @@ private:
      */
     void resize(size_type newSize)
     {
-        T* tmp = new T[newSize];
+        T* tmp = mAllocator.allocate(newSize);
         
         for(size_type i = 0; i < mSize; i++)
         {
-            tmp[i] = mData[i];
+            mAllocator.construct(&tmp[i], mData[i]);
         }
 
         if(mData != nullptr)
-            delete[] mData;
+            mAllocator.deallocate(mData, mCapacity);
         mCapacity = newSize;
         mData = tmp;
     }
@@ -425,6 +426,7 @@ private:
 
 private:
     T* mData;               //Puntatore ai dati
+    std::allocator<T> mAllocator;
     Equal mEq;              //Funtore per confronto elementi
     size_type mSize;        //Numero di elementi presenti
     size_type mCapacity;    //Numero di elementi inseribili
