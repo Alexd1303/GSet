@@ -5,7 +5,11 @@ Alessandro Dubini
 Matricola: 885957
 
 ## Panoramica del Progetto
-Questo progetto in C++ include l'implementazione di una classe set generica, con la possibilità di definire un funtore personalizzato per il confronto di uguaglianza tra elementi. Il set supporta operazioni comuni come l'aggiunta, la rimozione, la verifica della presenza di un elemento, l'iterazione e fornisce operatori di unione e intersezione tra set.
+La classe Set implementa un set generico, con la possibilità di definire un funtore
+personalizzato per il confronto di uguaglianza tra elementi.
+Fornisce operazioni comuni come l'aggiunta, la rimozione, la verifica della presenza
+di un elemento, l'iterazione, e supporta operatori di unione e intersezione tra set.
+La classe è progettata per permettere di gestire un numero variabile di elementi.
 
 ## Ambienti Testati
 - MSVC 19 (Windows 11)
@@ -19,17 +23,19 @@ L'implementazione utilizza un array di tipo generico T per rispettare i requisit
 
 ### Considerazioni di Implementazione
 - Il tempo per l'aggiunta di un elemento aumenta quando è necessario ridimensionare.
-- Aumento del tempo di rimozione dovuto allo spostamento dei dati a sinistra.
+- Aumento del tempo di rimozione dovuto allo shift dei dati a sinistra.
 - Possibile spreco di memoria se viene rimosso un numero significativo di elementi da un Set grande.
 
 ### Requisito del Costruttore
 Per utilizzare una struttura ad array e beneficiare dei vantaggi menzionati, tutte le classi utilizzate con questo Set devono definire un costruttore predefinito o un costruttore chiamabile senza argomenti.
 
-### Evitare `add` nel Costruttore di Copia e nell'Operatore di Assegnamento
+### Non utilizzare `add` nel Costruttore di Copia e nell'Operatore di Assegnamento
 Per garantire l'unicità degli elementi durante la creazione di un Set da un altro Set, si evita il metodo `add` per evitare controlli ridondanti sull'unicità. Invece, viene eseguita una copia diretta delle strutture interne.
 
 ### Fattore di Crescita della Capacità
-La capacità del set cresce secondo la formula: `mCapacity = 2` se `mCapacity = 0`, altrimenti `mCapacity + ceil(mCapacity/2)` se `mCapacity >= 2`. Questa scelta mira a fornire spazio sufficiente per le aggiunte successive, limitando le chiamate di ridimensionamento e minimizzando lo spreco di memoria.
+La capacità del set cresce secondo la formula:
+\[mCapacity = \begin{cases} 2, & \text{se } mCapacity = 0 \\ mCapacity + \left\lceil \frac{mCapacity}{2} \right\rceil, & \text{se } mCapacity \geq 2 \end{cases}\]
+Questa scelta mira a fornire spazio sufficiente per le aggiunte successive, limitando le chiamate di ridimensionamento e minimizzando lo spreco di memoria.
 
 ### Tipo di Ritorno dei Metodi `add` e `remove`
 Entrambi i metodi `add` e `remove` restituiscono un valore booleano che indica il successo dell'operazione (true se riuscita, false altrimenti).
