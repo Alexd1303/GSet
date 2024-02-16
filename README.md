@@ -1,4 +1,4 @@
-# Set Class - Progetto C++
+# Classe GSet - Progetto C++
 
 ## Autore
 Alessandro Dubini  
