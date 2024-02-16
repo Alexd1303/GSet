@@ -160,7 +160,7 @@ void testMetodiStringSet()
 
     StringSet stringSet2(stringSet);  // cctor
 
-    std::cout << "Stampa di intSet2 dopo copy constructor:" << std::endl;
+    std::cout << "Stampa di stringSet2 dopo copy constructor:" << std::endl;
     std::cout << stringSet2 << std::endl;  // operator<<
     ss << stringSet2;
     assert(stringSet == stringSet2); // operator==
@@ -171,7 +171,7 @@ void testMetodiStringSet()
 
     stringSet3 = stringSet2; // operator=
 
-    std::cout << "Stampa di intSet3 dopo assegnamento:" << std::endl;
+    std::cout << "Stampa di stringSet3 dopo assegnamento:" << std::endl;
     std::cout << stringSet3 << std::endl;  // operator<<
     ss << stringSet3;
     assert(stringSet == stringSet3); // operator==
@@ -405,7 +405,7 @@ void testMetodiGlobali()
     assert(ss.str() == "9 (5) (8) (1) (4) (7) (765) (56) (65) (33)");
     ss.str("");
 
-    std::cout << "- Test itersezione tra set" << std::endl;
+    std::cout << "- Test intersezione tra set" << std::endl;
     auto setIntersection = intA - intB;
     std::cout << setIntersection << std::endl;
     ss << setIntersection;
@@ -448,7 +448,7 @@ void testMetodiGlobali()
     assert(ss.str() == "6 (9780151660346: 1984) (978349803808: To Kill a Mockingbird) (8869183157: Harry Potter and the Sorcerer's Stone) (9780007203550: The Lord of the Rings) (1234: AAAA) (5678: BBBB)");
     ss.str("");
 
-    std::cout << "- Test itersezione tra set" << std::endl;
+    std::cout << "- Test intersezione tra set" << std::endl;
     auto setIntersectionB = bookA - bookB;
     std::cout << setIntersectionB << std::endl;
     ss << setIntersectionB;
